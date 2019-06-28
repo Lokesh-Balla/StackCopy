@@ -1,0 +1,29 @@
+{% extends 'forums/base.html' %}
+
+{% block content %}
+    <span class="container" style="display: inline-block;margin: 2% 30%;width: 100%">
+        <input type="text" placeholder="Search for question" class="input is-rounded" style="width: 40%;">
+        <button class="button is-rounded is-info"><i class="fa fa-search"></i></button>
+    </span>
+
+    <div class="container" style="width: 70%;margin-left: 15%;">
+
+        {% for que in fq %}
+            <div class="box">
+                <h3 class="title is-5">{{ que.title }}</h3>
+                <p>{{ que.desc }}</p>
+                <hr>
+                <div class="level">
+                    <span>
+                        {{ que.cup }}&nbsp<i class="far fa-thumbs-up"></i>&nbsp
+                        {{ que.cdwn }}&nbsp<i class="far fa-thumbs-down"></i>
+                    </span>
+                    <span class="level-right">Question asked by {{ que.user__username }}</span>
+                </div>
+
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

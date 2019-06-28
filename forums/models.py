@@ -4,26 +4,19 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Users(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.CharField(max_length=150, blank=True, null=True)
-
-
 class Questions(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, null=False, blank=False)
     desc = models.TextField(null=False, blank=False)
     last_updated = models.DateTimeField(auto_now=True)
     date_closed = models.DateTimeField(null=True, blank=True)
-    up_votes = models.IntegerField(default=0)
-    down_votes = models.IntegerField(default=0)
 
 
 class Answers(models.Model):
     question = models.ForeignKey(Questions, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     desc = models.TextField(null=False, blank=False)
     answered_date = models.DateTimeField(auto_now=True)
-    up_votes = models.IntegerField(default=0)
-    down_votes = models.IntegerField(default=0)
 
 
 class Tags(models.Model):
@@ -34,3 +27,17 @@ class Tags(models.Model):
 class QueTag(models.Model):
     qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
     tid = models.ForeignKey(Tags, on_delete=models.CASCADE)
+
+
+class VotesQuestion(models.Model):
+    qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
+    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    up_vote = models.BooleanField(default=False)
+    down_vote = models.BooleanField(default=False)
+
+
+class VotesAnswers(models.Model):
+    qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
+    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    up_vote = models.BooleanField(default=False)
+    down_vote = models.BooleanField(default=False)

@@ -7,7 +7,19 @@
     <title>StackCopy - Place where you find answer to your questions</title>
     <link rel="stylesheet" href="{% static 'forums/bulma.css' %}">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script>
 
+        function start() {
+            let dropdown = document.querySelector('.dropdown');
+            dropdown.addEventListener('click', function (event) {
+                event.stopPropagation();
+                dropdown.classList.toggle('is-active');
+            });
+        }
+
+        window.onload = start;
+
+    </script>
 </head>
 <body>
 <nav class="navbar is-black" role="navigation">
@@ -21,8 +33,36 @@
     {% if user.is_authenticated %}
         <div class="navbar-end">
             <div class="navbar-item">
-                <p>Welcome <b>{{ user.username }}</b></p>
-                <a class="button is-rounded is-small" href="{% url 'logout' %}">Logout<i class="fas fa-sign-out-alt"></i></a>
+
+
+                <div class="dropdown is-right">
+                    <div class="dropdown-trigger">
+                        <button class="button is-dark" style="background-color: rgba(0, 0, 0, 0);">
+                            <span>Welcome <b>{{ user.username }}</b></span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down"></i>
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdown-menu2" role="menu">
+                        <div class="dropdown-content">
+                            <div class="dropdown-item">
+                                <b>{{ user.username }}</b>
+                            </div>
+                            <hr class="dropdown-divider">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa-fw fas fa-user-edit"></i>
+                                Edit Info
+                            </a>
+                            <a class="dropdown-item" href="{% url 'logout' %}">
+                                Logout&nbsp
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     {% else %}

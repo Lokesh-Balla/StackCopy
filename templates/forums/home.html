@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StackCopy</title>
+    <link rel="stylesheet" href="{% static 'forums/bulma.css' %}">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<style>
+
+    html {
+        overflow: hidden;
+    }
+
+    .hero {
+        background-image: url("{% static 'forums/images/back.jpg'%}");
+        background-size: cover;
+        filter: blur(8px);
+        -webkit-filter: blur(8px);
+    }
+
+    .hero-body {
+        background-color: rgba(0, 0, 0, 0.4);
+        position: absolute;
+        border-radius: 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        width: 60%;
+    }
+
+    .button {
+        opacity: .8;
+    }
+
+    #login, #signup, #welcome {
+        display: none;
+        width: 40%;
+        margin-left: 30%;
+    }
+
+
+</style>
+<script async>
+    function changeToLogin() {
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("signup").style.display = "none";
+        document.getElementById("login").style.display = "inherit";
+    }
+
+    function changeToSignUp() {
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("login").style.display = "none";
+        document.getElementById("signup").style.display = "inherit";
+    }
+
+    function start() {
+        {% if '/login' in request.path %}
+            changeToLogin();
+        {% elif '/signup' in request.path %}
+            changeToSignUp();
+        {% else %}
+            document.getElementById("welcome").style.display = "inherit";
+        {% endif %}
+    }
+
+    window.onload = start;
+
+
+</script>
+<body>
+<section class="hero is-fullheight"></section>
+<div class="hero-body" id="body_content">
+    <div class="container has-text-centered">
+
+
+        <div id="welcome">
+            <h1 class="title" style="color: white;">
+                Welcome to StackCopy
+            </h1>
+            <h2 class="subtitle" style="color: white;">
+                Place for answers to all your questions
+            </h2>
+            <button class="button is-rounded is-light" onclick="changeToLogin()">Login</button>
+            <button class="button is-rounded is-light" onclick="changeToSignUp()">Sign Up</button>
+        </div>
+
+
+        <div id="login">
+            <h1 class="title" style="color: white">Login</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label" style="color: white;">Username</label>
+                    <div class="control has-icons-left has-icons-right">
+                        {{ login_form.username }}
+                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" style="color: white;">Password</label>
+                    <div class="control has-icons-left">
+                        {{ login_form.password }}
+                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                    </div>
+                </div>
+                <button type="submit" class="button is-rounded is-info">Login</button>
+                <a onclick="changeToSignUp()" class="button is-text"
+                   style="color: white;background-color: rgba(0, 0, 0, 0);">Not a member? Join Us</a>
+            </form>
+        </div>
+
+
+        <div id="signup">
+            <h1 class="title" style="color: white">Sign Up</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label" style="color: white;">First Name</label>
+                    <div class="control">
+                        {{ sign_up_form.first_name }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" style="color: white;">Last Name</label>
+                    <div class="control">
+                        {{ sign_up_form.last_name }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" style="color: white;">Username</label>
+                    <div class="control has-icons-left has-icons-right">
+                        {{ sign_up_form.username }}
+                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" style="color: white;">Password</label>
+                    <div class="control has-icons-left">
+                        {{ sign_up_form.password }}
+                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                    </div>
+                </div>
+                <button type="submit" class="button is-rounded is-info">Sign Up</button>
+                <a onclick="changeToLogin()" class="button is-text"
+                   style="color: white;background-color: rgba(0, 0, 0, 0);">Already a user? Login</a>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+
+</body>
+</html>

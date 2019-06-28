@@ -16,13 +16,25 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from forums.views import *
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Forms urls
+    path('', HomePage.as_view(), name='home'),
+    path('login', HomePage.as_view(), name='login'),
+    path('signup', HomePage.as_view(), name='signup'),
+    path('logout', Logout.as_view(), name='logout'),
+
+
+    path('questions', QuestionsView.as_view(), name='questions'),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
                       path('__debug__/', include(debug_toolbar.urls)),
                   ] + urlpatterns

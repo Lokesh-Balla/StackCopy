@@ -1,29 +1,75 @@
 {% extends 'forums/base.html' %}
 
 {% block content %}
+
     <span class="container" style="display: inline-block;margin: 2% 30%;width: 100%">
-        <input type="text" placeholder="Search for question" class="input is-rounded" style="width: 40%;">
-        <button class="button is-rounded is-info"><i class="fa fa-search"></i></button>
+        <input type="text" id="searchBar" placeholder="Search for question" class="input is-rounded"
+               style="width: 40%;" onkeyup="search()">
+        <button class="button is-rounded is-info" onclick="search();"><i class="fa fa-search"></i></button>
     </span>
 
-    <div class="container" style="width: 70%;margin-left: 15%;">
-
-        {% for que in fq %}
-            <div class="box">
-                <h3 class="title is-5">{{ que.title }}</h3>
-                <p>{{ que.desc }}</p>
-                <hr>
-                <div class="level">
-                    <span>
-                        {{ que.cup }}&nbsp<i class="far fa-thumbs-up"></i>&nbsp
-                        {{ que.cdwn }}&nbsp<i class="far fa-thumbs-down"></i>
-                    </span>
-                    <span class="level-right">Question asked by {{ que.user__username }}</span>
-                </div>
-
+    <div class="container" id="results" style="width: 70%;margin-left: 15%;">
+        <div class="box" v-for="que in fq">
+            <div class="tags are-small">
+                <span v-for="x in que.tags" class="tag is-link">[[ x.tag_name ]]</span>
             </div>
-        {% endfor %}
-
+            <hr>
+            <h3 class="title is-5">[[ que.title ]]</h3>
+            <p>[[ que.desc ]]</p>
+            <hr>
+            <div class="level">
+                    <span id="votes">
+                        [[ votes(que.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
+                        [[ votes(que.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+                    </span>
+                <span class="level-right">Question asked by [[ que.user.username ]]</span>
+            </div>
+        </div>
     </div>
+
+    <script>
+
+        let app = new Vue({
+            el: '#results',
+            data: {
+                fq: '',
+            },
+            delimiters: ["[[", "]]"],
+
+            methods: {
+                votes: function (data, value) {
+                    let count = 0;
+                    for (item of data) {
+                        if (item.vote === value) {
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+            },
+        });
+
+        function search() {
+
+            phrase = document.getElementById("searchBar").value;
+
+            if (phrase != '') {
+                url = 'http://localhost:8000/api/questions/' + phrase
+
+                fetch(url).then(data => data.json()).then(data => {
+                    app.fq = data;
+                });
+            } else {
+                url = 'http://localhost:8000/api/questions'
+
+                fetch(url).then(data => data.json()).then(data => {
+                    app.fq = data
+                });
+            }
+        }
+
+        search()
+
+    </script>
 
 {% endblock %}

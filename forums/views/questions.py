@@ -2,23 +2,32 @@ from django.views import View
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from forums.models import *
-from django.db.models import Count, Q
+from django.db.models import Count, Q, When
+from rest_framework.views import APIView
+from forums.serializers import *
+from rest_framework.response import Response
+from rest_framework import status
+import requests
 from forums.forms import *
 from django.db.utils import *
 
 
 class QuestionsView(View):
-    def get(self, request, **kwargs):
-        famous_questions = Questions.objects.values('title', 'desc', 'user__username').order_by(
-            '-last_updated').annotate(cup=Count('votesquestion', filter=Q(votesquestion__up_vote=True)),
-                                      cdwn=Count('votesquestion', filter=Q(votesquestion__down_vote=True)))[:10]
+    def get(self, request):
         return render(
             request,
             template_name='forums/questions.html',
-            context={
-                'fq': famous_questions,
-            },
         )
 
     def post(self, request, **kwargs):
         pass
+
+
+class QuestionsApi(APIView):
+    def get(self, request, **kwargs):
+        if(kwargs):
+            queryset = Questions.objects.filter(title__contains=kwargs['phrase'])
+        else:
+            queryset = Questions.objects.all()
+        serializer = QuestionsSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -10,6 +10,11 @@ class Questions(models.Model):
     desc = models.TextField(null=False, blank=False)
     last_updated = models.DateTimeField(auto_now=True)
     date_closed = models.DateTimeField(null=True, blank=True)
+    tags = models.ManyToManyField('Tags')
+    votes = models.ManyToManyField('Votes')
+
+    def __str__(self):
+        return self.title
 
 
 class Answers(models.Model):
@@ -17,27 +22,16 @@ class Answers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     desc = models.TextField(null=False, blank=False)
     answered_date = models.DateTimeField(auto_now=True)
+    votes = models.ManyToManyField('Votes')
 
 
 class Tags(models.Model):
     tag_name = models.CharField(max_length=50, null=False, blank=False)
 
-
-# Yeah I know not the best name
-class QueTag(models.Model):
-    qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
-    tid = models.ForeignKey(Tags, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.tag_name
 
 
-class VotesQuestion(models.Model):
-    qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    up_vote = models.BooleanField(default=False)
-    down_vote = models.BooleanField(default=False)
-
-
-class VotesAnswers(models.Model):
-    qid = models.ForeignKey(Questions, on_delete=models.CASCADE)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    up_vote = models.BooleanField(default=False)
-    down_vote = models.BooleanField(default=False)
+class Votes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    vote = models.IntegerField(default=0)

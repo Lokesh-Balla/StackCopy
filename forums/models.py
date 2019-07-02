@@ -10,8 +10,8 @@ class Questions(models.Model):
     desc = models.TextField(null=False, blank=False)
     last_updated = models.DateTimeField(auto_now=True)
     date_closed = models.DateTimeField(null=True, blank=True)
-    tags = models.ManyToManyField('Tags')
-    votes = models.ManyToManyField('Votes')
+    tags = models.ManyToManyField('Tags', blank=True)
+    votes = models.ManyToManyField('Votes', blank=True)
 
     def __str__(self):
         return self.title
@@ -22,7 +22,7 @@ class Answers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     desc = models.TextField(null=False, blank=False)
     answered_date = models.DateTimeField(auto_now=True)
-    votes = models.ManyToManyField('Votes')
+    votes = models.ManyToManyField('Votes', blank=True)
 
 
 class Tags(models.Model):

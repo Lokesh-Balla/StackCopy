@@ -11,11 +11,23 @@
     <script>
 
         function start() {
+
+            let search_input = document.getElementById("searchBar");
+            search_input.addEventListener("keyup", function (event) {
+                if (event.code === "Enter") {
+                    search();
+                }
+            });
+
+            {% if user.is_authenticated %}
             let dropdown = document.querySelector('.dropdown');
             dropdown.addEventListener('click', function (event) {
                 event.stopPropagation();
                 dropdown.classList.toggle('is-active');
             });
+            {% endif %}
+
+
         }
 
         window.onload = start;
@@ -29,6 +41,14 @@
         <a class="navbar-item" href="questions">
             <strong>StackCopy</strong>
         </a>
+    </div>
+
+    <div class="navbar-item">
+        <span class="control has-icons-right">
+            <input type="text" id="searchBar" placeholder="Search for question" class="input is-rounded">
+            <span class="icon is-small is-right"><i class="fas fa-search"></i></span>
+        </span>
+
     </div>
 
     {% if user.is_authenticated %}

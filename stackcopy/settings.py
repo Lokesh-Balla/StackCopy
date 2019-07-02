@@ -52,6 +52,11 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'forums.pagination.CustomPagination',
+    'PAGE_SIZE': 10,
+}
+
 ROOT_URLCONF = 'stackcopy.urls'
 
 TEMPLATES = [

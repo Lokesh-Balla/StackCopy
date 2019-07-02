@@ -2,30 +2,62 @@
 
 {% block content %}
 
-    <span class="container" style="display: inline-block;margin: 2% 30%;width: 100%">
-        <input type="text" id="searchBar" placeholder="Search for question" class="input is-rounded"
-               style="width: 40%;" onkeyup="search()">
-        <button class="button is-rounded is-info" onclick="search();"><i class="fa fa-search"></i></button>
-    </span>
 
-    <div class="container" id="results" style="width: 70%;margin-left: 15%;">
-        <div class="box" v-for="que in fq">
-            <div class="tags are-small">
-                <span v-for="x in que.tags" class="tag is-link">[[ x.tag_name ]]</span>
+    <div class="container" style="position: absolute;width: 20%;margin-right: 3%;margin-top: 4%;right: 0%;">
+
+        <div class="box">
+            <h5 class="title is-5">Famous Tags</h5>
+            <div class="tags">
+                {% for tag in famous_tags %}
+                    <span class="tag is-warning is-rounded">{{ tag.tag_name }}</span>
+                {% endfor %}
             </div>
-            <hr>
-            <h3 class="title is-5">[[ que.title ]]</h3>
-            <p>[[ que.desc ]]</p>
-            <hr>
-            <div class="level">
+        </div>
+
+        <div class="box">
+            <h5 class="title is-5">Popular Questions</h5>
+            <table class="table is-striped is-hoverable is-fullwidth">
+                {% for question in popular_questions %}
+                    <tr><td>{{ question.title }}</td></tr>
+                {% endfor %}
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="container" style="width: 70%;margin-left: 5%;">
+
+        <div class="container" style="margin: 1% 0%;">
+            <button class="button is-rounded is-info">Ask Question</button>
+        </div>
+
+        <div class="container" id="results">
+            <div class="box" v-for="que in fq.results">
+                <div class="tags are-small">
+                    <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+                </div>
+                <hr>
+                <h3 class="title is-5">[[ que.title ]]</h3>
+                <p>[[ que.desc ]]</p>
+                <hr>
+                <div class="level">
                     <span id="votes">
                         [[ votes(que.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
                         [[ votes(que.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
                     </span>
-                <span class="level-right">Question asked by [[ que.user.username ]]</span>
+                    <span class="level-right">Question asked by [[ que.user.username ]]</span>
+                </div>
             </div>
+            <nav class="pagination is-centered" role="navigation" style="margin-bottom: 2%;">
+                <a v-if="fq.previous" class="pagination-previous" onclick="navigation('pre')">Previous</a>
+                <a v-else class="pagination-previous" disabled>Previous</a>
+                <a v-if="fq.next" class="pagination-next" onclick="navigation('nxt')">Next page</a>
+                <a v-else class="pagination-next" disabled>Next page</a>
+            </nav>
         </div>
     </div>
+
 
     <script>
 
@@ -51,24 +83,37 @@
 
         function search() {
 
-            phrase = document.getElementById("searchBar").value;
+            let phrase = document.getElementById("searchBar").value;
+            let url;
 
-            if (phrase != '') {
-                url = 'http://localhost:8000/api/questions/' + phrase
+            if (phrase !== '') {
+                url = '{% url 'questions_api' %}' + '/' + phrase;
 
                 fetch(url).then(data => data.json()).then(data => {
                     app.fq = data;
                 });
             } else {
-                url = 'http://localhost:8000/api/questions'
+                url = '{% url 'questions_api' %}';
 
                 fetch(url).then(data => data.json()).then(data => {
-                    app.fq = data
+                    app.fq = data;
                 });
             }
         }
 
-        search()
+        function navigation(phrase) {
+            let url;
+            if (phrase === 'nxt') {
+                url = app.fq.next;
+            } else if (phrase === 'pre') {
+                url = app.fq.previous;
+            }
+            fetch(url).then(data => data.json()).then(data => {
+                app.fq = data;
+            });
+        }
+
+        search();
 
     </script>
 

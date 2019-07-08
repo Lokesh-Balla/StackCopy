@@ -1,0 +1,64 @@
+{% extends 'forums/base.html' %}
+{% load static %}
+{% block content %}
+    <script src="{% static 'forums/js/editor.js' %}"></script>
+
+    <div class="box" style="width: 70%;margin-left: 5%; margin-top: 4%">
+        <h5>Title</h5>
+        <input type="text" class="input required" placeholder="Enter the title" id="Q_title">
+        <h5 style="margin-top: 2%;">Text Editor</h5>
+        <div class="buttons">
+            <button class="button" onclick="bold();" id="b_bold"><i class="fas fa-bold"></i></button>
+            <button class="button" onclick="italic();" id="b_italic"><i class="fas fa-italic"></i>
+            </button>
+            <button class="button" onclick="link();" id="b_link"><i class="fas fa-link"></i></button>
+            <button class="button" onclick="code();" id="b_code"><i class="fas fa-code"></i></button>
+            <button class="button" onclick="lalign();" id="b_lalign"><i class="fas fa-align-left"></i>
+            </button>
+            <button class="button" onclick="ralign();" id="b_ralign"><i class="fas fa-align-right"></i></button>
+            <button class="button" onclick="calign();" id="b_calign"><i class="fas fa-align-center"></i></button>
+            <button class="button" onclick="strike();" id="b_strike"><i class="fas fa-strikethrough"></i></button>
+        </div>
+        <div contenteditable="true" class="textarea" id="editor" style="height: auto"></div>
+        <h5 style="margin-top: 2%;">Tags</h5>
+        <input type="text" class="input" id="Q_tags">
+        <button class="button is-rounded is-info" onclick="postQuestion();" style="margin-top: 2%;">Post Question
+        </button>
+        <span style="margin-top: 4%;float: right;">Question by {{ user.username }}</span>
+    </div>
+
+    <script>
+
+        let token = '{{csrf_token}}';
+
+        function getJson() {
+            let title = document.getElementById('Q_title').value;
+            let desc = document.getElementById('editor').innerHTML;
+            let tags = document.getElementById('Q_tags').value;
+            let user_id = "{{ user.id }}";
+
+            let text = {"user_id": user_id, "title": title, "desc": desc, "tags": tags};
+
+            return JSON.stringify(text);
+        }
+
+        function postQuestion() {
+
+            let data = getJson();
+
+            let xhr = new XMLHttpRequest();
+            let url = "{% url 'askquestion_api' %}";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("X-CSRFToken", token);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 201) {
+                    window.location.replace("{% url "questions" %}")
+                }
+            };
+            xhr.send(data);
+        }
+
+    </script>
+
+{% endblock %}

@@ -2,34 +2,10 @@
 
 {% block content %}
 
-
-    <div class="container" style="position: absolute;width: 20%;margin-right: 3%;margin-top: 4%;right: 0%;">
-
-        <div class="box">
-            <h5 class="title is-5">Famous Tags</h5>
-            <div class="tags">
-                {% for tag in famous_tags %}
-                    <span class="tag is-warning is-rounded">{{ tag.tag_name }}</span>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="box">
-            <h5 class="title is-5">Popular Questions</h5>
-            <table class="table is-striped is-hoverable is-fullwidth">
-                {% for question in popular_questions %}
-                    <tr><td>{{ question.title }}</td></tr>
-                {% endfor %}
-            </table>
-
-        </div>
-
-    </div>
-
     <div class="container" style="width: 70%;margin-left: 5%;">
 
         <div class="container" style="margin: 1% 0%;">
-            <button class="button is-rounded is-info">Ask Question</button>
+            <a class="button is-rounded is-info" href="{% url 'askquestion' %}">Ask Question</a>
         </div>
 
         <div class="container" id="results">
@@ -39,7 +15,7 @@
                 </div>
                 <hr>
                 <h3 class="title is-5">[[ que.title ]]</h3>
-                <p>[[ que.desc ]]</p>
+                <div v-html="que.desc"></div>
                 <hr>
                 <div class="level">
                     <span id="votes">

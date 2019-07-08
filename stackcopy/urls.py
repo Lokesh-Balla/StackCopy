@@ -30,11 +30,12 @@ urlpatterns = [
 
 
     path('questions', QuestionsView.as_view(), name='questions'),
-
+    path('askquestion', AskQuestionView.as_view(), name='askquestion'),
 
     # API Calls
     path('api/questions', QuestionsApi.as_view(), name='questions_api'),
     path('api/questions/<str:phrase>', QuestionsApi.as_view(), name='questions_api_phrase'),
+    path('api/askquestion', AskQuestionApi.as_view(), name='askquestion_api'),
 ]
 
 if settings.DEBUG:

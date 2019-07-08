@@ -20,11 +20,11 @@
             });
 
             {% if user.is_authenticated %}
-            let dropdown = document.querySelector('.dropdown');
-            dropdown.addEventListener('click', function (event) {
-                event.stopPropagation();
-                dropdown.classList.toggle('is-active');
-            });
+                let dropdown = document.querySelector('.dropdown');
+                dropdown.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    dropdown.classList.toggle('is-active');
+                });
             {% endif %}
 
 
@@ -102,6 +102,32 @@
     {% endif %}
 
 </nav>
+
+<div class="container" style="position: absolute;width: 20%;margin-right: 3%;margin-top: 4%;right: 0%;">
+
+    <div class="box">
+        <h5 class="title is-5">Famous Tags</h5>
+        <div class="tags">
+            {% for tag in famous_tags %}
+                <span class="tag is-warning is-rounded">{{ tag.tag_name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="box">
+        <h5 class="title is-5">Popular Questions</h5>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            {% for question in popular_questions %}
+                <tr>
+                    <td>{{ question.title }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
+
 {% block content %}
 {% endblock %}
 </body>

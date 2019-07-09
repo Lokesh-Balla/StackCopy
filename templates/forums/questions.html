@@ -9,7 +9,7 @@
         </div>
 
         <div class="container" id="results">
-            <div class="box" v-for="que in fq.results">
+            <div class="box" v-for="que in fq.results" v-on:click="viewQue(que.id)" id="question">
                 <div class="tags are-small">
                     <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
                 </div>
@@ -53,6 +53,9 @@
                         }
                     }
                     return count;
+                },
+                viewQue: function (id) {
+                    window.location.href = "{% url 'viewquestion' %}"+id;
                 },
             },
         });

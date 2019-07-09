@@ -32,7 +32,7 @@ class QuestionsView(View):
 
 
 class AskQuestionView(View):
-    def get(self, request, **kwargs):
+    def get(self, request):
         famous_tags = Tags.objects.values('tag_name').annotate(count=Count('questions__pk')).order_by('-count')[:10]
         popular_questions = Questions.objects.values('title').annotate(
             count=Count('pk', filter=Q(votes__vote=1))).order_by('-count')
@@ -41,6 +41,23 @@ class AskQuestionView(View):
             request,
             template_name='forums/askquestions.html',
             context={
+                'famous_tags': famous_tags,
+                'popular_questions': popular_questions,
+            },
+        )
+
+
+class ViewQuestion(View):
+    def get(self, request, **kwargs):
+        famous_tags = Tags.objects.values('tag_name').annotate(count=Count('questions__pk')).order_by('-count')[:10]
+        popular_questions = Questions.objects.values('title').annotate(
+            count=Count('pk', filter=Q(votes__vote=1))).order_by('-count')
+
+        return render(
+            request,
+            template_name='forums/viewquestion.html',
+            context={
+                'q_id': kwargs['pk'],
                 'famous_tags': famous_tags,
                 'popular_questions': popular_questions,
             },
@@ -70,6 +87,19 @@ class AskQuestionApi(APIView):
         return Response({'status': 'posted successfully'}, status=status.HTTP_201_CREATED)
 
 
+class PostAnswerApi(APIView):
+    def post(self, request, **kwargs):
+        data = request.data
+
+        form = Answers()
+
+        form.question = Questions.objects.get(pk=kwargs['pk'])
+        form.user = User.objects.get(pk=data['user_id'])
+        form.desc = data['desc']
+        form.save()
+        return Response({'status': 'posted successfully'}, status=status.HTTP_201_CREATED)
+
+
 # class QuestionsApi(APIView):
 #     def get(self, request, **kwargs):
 #         if kwargs:
@@ -90,6 +120,17 @@ class QuestionsApi(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Questions.objects.all().order_by("-last_updated")
 
     def get(self, request, **kwargs):
-        if kwargs:
+        if "phrase" in kwargs:
             self.queryset = Questions.objects.filter(title__contains=kwargs['phrase']).order_by("-last_updated")
+        elif "pk" in kwargs:
+            self.queryset = Questions.objects.filter(pk=kwargs['pk'])
+        return self.list(request, **kwargs)
+
+
+class QuestionAnswersApi(mixins.ListModelMixin, generics.GenericAPIView):
+    serializer_class = QuestionAnswersSerializer
+    queryset = None
+
+    def get(self, request, **kwargs):
+        self.queryset = Answers.objects.filter(question__pk=kwargs['pk'])
         return self.list(request, **kwargs)

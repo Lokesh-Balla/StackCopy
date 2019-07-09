@@ -1,0 +1,149 @@
+{% extends 'forums/base.html' %}
+{% load static %}
+{% block content %}
+    <script src="{% static 'forums/js/editor.js' %}"></script>
+
+    <div class="container" style="width: 70%;margin-left: 5%;margin-top: 4%;" id="qna">
+
+        {#Quesiton#}
+        <div class="box" v-for="que in qs.results" id="question_statement">
+            <div class="tags are-small">
+                <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+            </div>
+            <hr>
+            <h3 class="title is-5">[[ que.title ]]</h3>
+            <div v-html="que.desc"></div>
+            <hr>
+            <div class="level">
+            <span id="votes">
+                [[ votes(que.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
+                [[ votes(que.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+            </span>
+                <span class="level-right">Question asked by [[ que.user.username ]]</span>
+            </div>
+        </div>
+
+
+        {#Post Answers#}
+        <div class="box has-background-grey-light" style="margin: 1%">
+            <div class="buttons">
+                <button class="button" onclick="bold();" id="b_bold"><i class="fas fa-bold"></i></button>
+                <button class="button" onclick="italic();" id="b_italic"><i class="fas fa-italic"></i>
+                </button>
+                <button class="button" onclick="link();" id="b_link"><i class="fas fa-link"></i></button>
+                <button class="button" onclick="code();" id="b_code"><i class="fas fa-code"></i></button>
+                <button class="button" onclick="lalign();" id="b_lalign"><i class="fas fa-align-left"></i>
+                </button>
+                <button class="button" onclick="ralign();" id="b_ralign"><i class="fas fa-align-right"></i></button>
+                <button class="button" onclick="calign();" id="b_calign"><i class="fas fa-align-center"></i></button>
+                <button class="button" onclick="strike();" id="b_strike"><i class="fas fa-strikethrough"></i></button>
+            </div>
+            <div contenteditable="true" class="textarea" id="editor" style="height: auto"></div>
+            <button class="button is-rounded is-info" onclick="postAnswer();" style="margin-top: 2%;">Post Answer
+            </button>
+            <span style="margin-top: 4%;float: right;">Answer by {{ user.username }}</span>
+        </div>
+
+
+        {#Answers#}
+        <div class="box has-background-grey-lighter" v-for="res in ans.results" id="answers" style="margin: 1%;">
+            <div v-html="res.desc"></div>
+            <hr>
+            <div class="level">
+            <span id="votes">
+                [[ votes(res.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
+                [[ votes(res.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+            </span>
+                <span class="level-right">Answered by [[ res.user.username ]]</span>
+            </div>
+        </div>
+
+        {#Pagination#}
+        <nav class="pagination is-centered" role="navigation" style="margin-bottom: 2%;">
+            <a v-if="ans.previous" class="pagination-previous" onclick="navigation('pre')">Previous</a>
+            <a v-else class="pagination-previous" disabled>Previous</a>
+            <a v-if="ans.next" class="pagination-next" onclick="navigation('nxt')">Next page</a>
+            <a v-else class="pagination-next" disabled>Next page</a>
+        </nav>
+
+    </div>
+
+    <script>
+        let app = new Vue({
+            el: '#qna',
+            data: {
+                qs: '',
+                ans: '',
+            },
+            delimiters: ["[[", "]]"],
+
+            methods: {
+                votes: function (data, value) {
+                    let count = 0;
+                    for (item of data) {
+                        if (item.vote === value) {
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+            },
+        });
+
+        let token = '{{csrf_token}}';
+
+        function getJson() {
+            let desc = document.getElementById('editor').innerHTML;
+            let user_id = "{{ user.id }}";
+
+            let text = {"user_id": user_id, "desc": desc};
+
+            return JSON.stringify(text);
+        }
+
+        function postAnswer() {
+            let data = getJson();
+
+            let xhr = new XMLHttpRequest();
+            let url = "{% url 'postanswer' q_id%}";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("X-CSRFToken", token);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 201) {
+                    window.location.replace("{% url "viewquestion_2" q_id%}")
+                }
+            };
+            xhr.send(data);
+        }
+
+        function loadQuestion() {
+            fetch("{% url 'questions_api_pk' q_id %}").then(data => data.json()).then(data => {
+                app.qs = data;
+            });
+        }
+
+        function loadanswers() {
+            fetch("{% url 'questionanswer' q_id %}").then(data => data.json()).then(data => {
+                app.ans = data;
+            });
+        }
+
+        function navigation(phrase) {
+            let url;
+            if (phrase === 'nxt') {
+                url = app.ans.next;
+            } else if (phrase === 'pre') {
+                url = app.ans.previous;
+            }
+            fetch(url).then(data => data.json()).then(data => {
+                app.ans = data;
+            });
+        }
+
+        loadQuestion();
+        loadanswers();
+
+    </script>
+
+{% endblock %}

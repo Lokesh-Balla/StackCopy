@@ -16,3 +16,12 @@ class QuestionsSerializer(serializers.ModelSerializer):
         model = Questions
         fields = ("id", "title", "desc", "last_updated", "date_closed", "tags", "votes", "user")
         depth = 1
+
+
+class QuestionAnswersSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Answers
+        fields = ("user", "desc", "answered_date", "votes")
+        depth = 1

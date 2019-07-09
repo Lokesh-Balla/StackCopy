@@ -3,7 +3,11 @@
 {% block content %}
     <script src="{% static 'forums/js/editor.js' %}"></script>
 
-    <div class="box" style="width: 70%;margin-left: 5%; margin-top: 4%">
+    <a class="button is-rounded is-dark" href="{% url 'questions' %}" style="margin-top: 2%;margin-left: 5%;">
+        <i class="fas fa-arrow-alt-circle-left"></i>&nbspGo Back
+    </a>
+
+    <div class="box" style="width: 70%;margin-left: 5%; margin-top: 1%">
         <h5>Title</h5>
         <input type="text" class="input required" placeholder="Enter the title" id="Q_title">
         <h5 style="margin-top: 2%;">Text Editor</h5>

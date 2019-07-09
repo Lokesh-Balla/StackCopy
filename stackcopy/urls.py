@@ -28,14 +28,20 @@ urlpatterns = [
     path('signup', HomePage.as_view(), name='signup'),
     path('logout', Logout.as_view(), name='logout'),
 
-
     path('questions', QuestionsView.as_view(), name='questions'),
     path('askquestion', AskQuestionView.as_view(), name='askquestion'),
 
+    # small hack for making redirect in frontend easy
+    path('viewquestion/', ViewQuestion.as_view(), name='viewquestion'),
+    path('viewquestion/<int:pk>', ViewQuestion.as_view(), name='viewquestion_2'),
+
     # API Calls
     path('api/questions', QuestionsApi.as_view(), name='questions_api'),
+    path('api/questions/<int:pk>', QuestionsApi.as_view(), name='questions_api_pk'),
     path('api/questions/<str:phrase>', QuestionsApi.as_view(), name='questions_api_phrase'),
     path('api/askquestion', AskQuestionApi.as_view(), name='askquestion_api'),
+    path('api/quesitonanswer/<int:pk>', QuestionAnswersApi.as_view(), name='questionanswer'),
+    path('api/postanswer/<int:pk>', PostAnswerApi.as_view(), name='postanswer'),
 ]
 
 if settings.DEBUG:

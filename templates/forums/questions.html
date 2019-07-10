@@ -5,7 +5,11 @@
     <div class="container" style="width: 70%;margin-left: 5%;">
 
         <div class="container" style="margin: 1% 0%;">
-            <a class="button is-rounded is-info" href="{% url 'askquestion' %}">Ask Question</a>
+            {% if user.is_authenticated %}
+                <a class="button is-rounded is-info" href="{% url 'askquestion' %}">Ask Question</a>
+            {% else %}
+                <a class="button" style="visibility: hidden">just a placeholder</a>
+            {% endif %}
         </div>
 
         <div class="container" id="results">
@@ -55,7 +59,7 @@
                     return count;
                 },
                 viewQue: function (id) {
-                    window.location.href = "{% url 'viewquestion' %}"+id;
+                    window.location.href = "{% url 'viewquestion' %}" + id;
                 },
             },
         });

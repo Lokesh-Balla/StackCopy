@@ -12,12 +12,14 @@
 
         function start() {
 
-            let search_input = document.getElementById("searchBar");
-            search_input.addEventListener("keyup", function (event) {
-                if (event.code === "Enter") {
-                    search();
-                }
-            });
+            {% if "/questions" in request.get_full_path  %}
+                let search_input = document.getElementById("searchBar");
+                search_input.addEventListener("keyup", function (event) {
+                    if (event.code === "Enter") {
+                        search();
+                    }
+                });
+            {% endif %}
 
             {% if user.is_authenticated %}
                 let dropdown = document.querySelector('.dropdown');
@@ -34,7 +36,7 @@
 
     </script>
     <style>
-        #question:hover{
+        #question:hover {
             transition: transform .2s;
             transform: scale(1.02);
         }
@@ -49,14 +51,14 @@
         </a>
     </div>
 
-    {% if "/questions" in request.get_full_path  %}
-    <div class="navbar-item">
+    {% if "/questions" in request.get_full_path %}
+        <div class="navbar-item">
         <span class="control has-icons-right">
             <input type="text" id="searchBar" placeholder="Search for question" class="input is-rounded">
             <span class="icon is-small is-right"><i class="fas fa-search"></i></span>
         </span>
 
-    </div>
+        </div>
     {% endif %}
 
     {% if user.is_authenticated %}

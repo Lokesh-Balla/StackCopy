@@ -25,25 +25,28 @@
 
 
         {#Post Answers#}
-        <div class="box has-background-grey-light" style="margin: 1%">
-            <div class="buttons">
-                <button class="button" onclick="bold();" id="b_bold"><i class="fas fa-bold"></i></button>
-                <button class="button" onclick="italic();" id="b_italic"><i class="fas fa-italic"></i>
+        {% if user.is_authenticated %}
+            <div class="box has-background-grey-light" style="margin: 1%">
+                <div class="buttons">
+                    <button class="button" onclick="bold();" id="b_bold"><i class="fas fa-bold"></i></button>
+                    <button class="button" onclick="italic();" id="b_italic"><i class="fas fa-italic"></i>
+                    </button>
+                    <button class="button" onclick="link();" id="b_link"><i class="fas fa-link"></i></button>
+                    <button class="button" onclick="code();" id="b_code"><i class="fas fa-code"></i></button>
+                    <button class="button" onclick="lalign();" id="b_lalign"><i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="button" onclick="ralign();" id="b_ralign"><i class="fas fa-align-right"></i></button>
+                    <button class="button" onclick="calign();" id="b_calign"><i class="fas fa-align-center"></i>
+                    </button>
+                    <button class="button" onclick="strike();" id="b_strike"><i class="fas fa-strikethrough"></i>
+                    </button>
+                </div>
+                <div contenteditable="true" class="textarea" id="editor" style="height: auto"></div>
+                <button class="button is-rounded is-info" onclick="postAnswer();" style="margin-top: 2%;">Post Answer
                 </button>
-                <button class="button" onclick="link();" id="b_link"><i class="fas fa-link"></i></button>
-                <button class="button" onclick="code();" id="b_code"><i class="fas fa-code"></i></button>
-                <button class="button" onclick="lalign();" id="b_lalign"><i class="fas fa-align-left"></i>
-                </button>
-                <button class="button" onclick="ralign();" id="b_ralign"><i class="fas fa-align-right"></i></button>
-                <button class="button" onclick="calign();" id="b_calign"><i class="fas fa-align-center"></i></button>
-                <button class="button" onclick="strike();" id="b_strike"><i class="fas fa-strikethrough"></i></button>
+                <span style="margin-top: 4%;float: right;">Answer by {{ user.username }}</span>
             </div>
-            <div contenteditable="true" class="textarea" id="editor" style="height: auto"></div>
-            <button class="button is-rounded is-info" onclick="postAnswer();" style="margin-top: 2%;">Post Answer
-            </button>
-            <span style="margin-top: 4%;float: right;">Answer by {{ user.username }}</span>
-        </div>
-
+        {% endif %}
 
         {#Answers#}
         <div class="box has-background-grey-lighter" v-for="res in ans.results" id="answers" style="margin: 1%;">

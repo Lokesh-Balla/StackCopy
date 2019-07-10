@@ -7,7 +7,10 @@ from django.db.utils import *
 
 
 class HomePage(View):
-    def get(self, request, **kwargs):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("questions")
+
         login_form = LoginForm(prefix="login")
         sign_up_form = SignUpForm(prefix="signup")
         return render(

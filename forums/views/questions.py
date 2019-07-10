@@ -33,6 +33,9 @@ class QuestionsView(View):
 
 class AskQuestionView(View):
     def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("questions")
+
         famous_tags = Tags.objects.values('tag_name').annotate(count=Count('questions__pk')).order_by('-count')[:10]
         popular_questions = Questions.objects.values('title').annotate(
             count=Count('pk', filter=Q(votes__vote=1))).order_by('-count')

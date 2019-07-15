@@ -42,6 +42,9 @@ urlpatterns = [
     path('api/askquestion', AskQuestionApi.as_view(), name='askquestion_api'),
     path('api/quesitonanswer/<int:pk>', QuestionAnswersApi.as_view(), name='questionanswer'),
     path('api/postanswer/<int:pk>', PostAnswerApi.as_view(), name='postanswer'),
+
+    path('api/updatevotesquestion', UpdateVotesQuestionsApi.as_view(), name='updatevotesquestion'),
+    path('api/updatevotesanswer', UpdateVotesAnswersApi.as_view(), name='updatevotesanswer'),
 ]
 
 if settings.DEBUG:

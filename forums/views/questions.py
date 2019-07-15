@@ -103,6 +103,54 @@ class PostAnswerApi(APIView):
         return Response({'status': 'posted successfully'}, status=status.HTTP_201_CREATED)
 
 
+class UpdateVotesQuestionsApi(APIView):
+    def post(self, request):
+        data = request.data
+
+        vote = Votes.objects.filter(questions__id=data["q_id"], user__id=data["user_id"])
+
+        if vote.exists():
+            vote = vote[0]
+            if vote.vote == data["value"]:
+                vote.delete()
+            else:
+                vote.vote = data["value"]
+                vote.save()
+        else:
+            form = Votes()
+            form.user = User.objects.get(pk=data["user_id"])
+            form.vote = data["value"]
+            form.save()
+            que = Questions.objects.get(pk=data["q_id"])
+            que.votes.add(form)
+
+        return Response({'status': 'updated successfully'}, status=status.HTTP_201_CREATED)
+
+
+class UpdateVotesAnswersApi(APIView):
+    def post(self, request):
+        data = request.data
+
+        vote = Votes.objects.filter(answers__id=data["a_id"], user__id=data["user_id"])
+
+        if vote.exists():
+            vote = vote[0]
+            if vote.vote == data["value"]:
+                vote.delete()
+            else:
+                vote.vote = data["value"]
+                vote.save()
+        else:
+            form = Votes()
+            form.user = User.objects.get(pk=data["user_id"])
+            form.vote = data["value"]
+            form.save()
+            ans = Answers.objects.get(pk=data["a_id"])
+            ans.votes.add(form)
+
+        return Response({'status': 'updated successfully'}, status=status.HTTP_201_CREATED)
+
+
 # class QuestionsApi(APIView):
 #     def get(self, request, **kwargs):
 #         if kwargs:

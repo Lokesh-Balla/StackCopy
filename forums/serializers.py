@@ -23,5 +23,5 @@ class QuestionAnswersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answers
-        fields = ("user", "desc", "answered_date", "votes")
+        fields = ("id", "user", "desc", "answered_date", "votes")
         depth = 1

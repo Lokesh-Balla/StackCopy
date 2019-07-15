@@ -13,18 +13,22 @@
         </div>
 
         <div class="container" id="results">
-            <div class="box" v-for="que in fq.results" v-on:click="viewQue(que.id)" id="question">
-                <div class="tags are-small">
-                    <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+            <div class="box" v-for="que in fq.results" id="question">
+                <div v-on:click="viewQue(que.id)">
+                    <div class="tags are-small">
+                        <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+                    </div>
+                    <hr>
+                    <h3 class="title is-5">[[ que.title ]]</h3>
+                    <div v-html="que.desc" style="height: 60px;overflow: hidden;"></div>
+                    <hr>
                 </div>
-                <hr>
-                <h3 class="title is-5">[[ que.title ]]</h3>
-                <div v-html="que.desc" style="height: 60px;overflow: hidden;"></div>
-                <hr>
                 <div class="level">
                     <span id="votes">
-                        [[ votes(que.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
-                        [[ votes(que.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+                        [[ votes(que.votes, 1) ]]&nbsp
+                        <a v-on:click="updateVotes(que.id,1)"><i class="far fa-thumbs-up"></i></a>&nbsp
+                        [[ votes(que.votes, -1) ]]&nbsp
+                        <a v-on:click="updateVotes(que.id,-1)"><i class="far fa-thumbs-down"></i></a>
                     </span>
                     <span class="level-right">Question asked by [[ que.user.username ]]</span>
                 </div>
@@ -40,6 +44,8 @@
 
 
     <script>
+
+        let token = '{{csrf_token}}';
 
         let app = new Vue({
             el: '#results',
@@ -60,6 +66,24 @@
                 },
                 viewQue: function (id) {
                     window.location.href = "{% url 'viewquestion' %}" + id;
+                },
+                updateVotes: function (id, value) {
+
+                    let user_id = "{{ user.id }}";
+                    let text = {"user_id": user_id, "q_id": id, "value": value};
+                    let data = JSON.stringify(text);
+
+                    let xhr = new XMLHttpRequest();
+                    let url = "{% url 'updatevotesquestion'%}";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 201) {
+                            search();
+                        }
+                    };
+                    xhr.send(data);
                 },
             },
         });

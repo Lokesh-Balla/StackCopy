@@ -7,17 +7,21 @@
 
         {#Quesiton#}
         <div class="box" v-for="que in qs.results" id="question_statement">
-            <div class="tags are-small">
-                <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+            <div v-on:click="viewQue(que.id)">
+                <div class="tags are-small">
+                    <span v-for="x in que.tags" class="tag is-rounded is-link">[[ x.tag_name ]]</span>
+                </div>
+                <hr>
+                <h3 class="title is-5">[[ que.title ]]</h3>
+                <div v-html="que.desc"></div>
+                <hr>
             </div>
-            <hr>
-            <h3 class="title is-5">[[ que.title ]]</h3>
-            <div v-html="que.desc"></div>
-            <hr>
             <div class="level">
             <span id="votes">
-                [[ votes(que.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
-                [[ votes(que.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+                [[ votes(que.votes, 1) ]]&nbsp
+                <a v-on:click="updateQueVotes(que.id,1)"><i class="far fa-thumbs-up"></i></a>&nbsp
+                [[ votes(que.votes, -1) ]]&nbsp
+                <a v-on:click="updateQueVotes(que.id,-1)"><i class="far fa-thumbs-down"></i></a>
             </span>
                 <span class="level-right">Question asked by [[ que.user.username ]]</span>
             </div>
@@ -41,7 +45,7 @@
                     <button class="button" onclick="strike();" id="b_strike"><i class="fas fa-strikethrough"></i>
                     </button>
                 </div>
-                <div contenteditable="true" class="textarea" id="editor" style="height: auto;"></div>
+                <div contenteditable="true" class="textarea" id="editor" style="height: auto;overflow: auto;"></div>
                 <button class="button is-rounded is-info" onclick="postAnswer();" style="margin-top: 2%;">Post Answer
                 </button>
                 <span style="margin-top: 4%;float: right;">Answer by {{ user.username }}</span>
@@ -53,9 +57,11 @@
             <div v-html="res.desc"></div>
             <hr>
             <div class="level">
-            <span id="votes">
-                [[ votes(res.votes, 1) ]]&nbsp<i class="far fa-thumbs-up"></i>&nbsp
-                [[ votes(res.votes, -1) ]]&nbsp<i class="far fa-thumbs-down"></i>
+                <span id="votes">
+                [[ votes(res.votes, 1) ]]&nbsp
+                <a v-on:click="updateAnsVotes(res.id,1)"><i class="far fa-thumbs-up"></i></a>&nbsp
+                [[ votes(res.votes, -1) ]]&nbsp
+                <a v-on:click="updateAnsVotes(res.id,-1)"><i class="far fa-thumbs-down"></i></a>
             </span>
                 <span class="level-right">Answered by [[ res.user.username ]]</span>
             </div>
@@ -72,6 +78,9 @@
     </div>
 
     <script>
+
+        let token = '{{csrf_token}}';
+
         let app = new Vue({
             el: '#qna',
             data: {
@@ -90,10 +99,44 @@
                     }
                     return count;
                 },
+                updateQueVotes: function (id, value) {
+
+                    let user_id = "{{ user.id }}";
+                    let text = {"user_id": user_id, "q_id": id, "value": value};
+                    let data = JSON.stringify(text);
+
+                    let xhr = new XMLHttpRequest();
+                    let url = "{% url 'updatevotesquestion'%}";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 201) {
+                            loadQuestion();
+                        }
+                    };
+                    xhr.send(data);
+                },
+                updateAnsVotes: function (id, value) {
+
+                    let user_id = "{{ user.id }}";
+                    let text = {"user_id": user_id, "a_id": id, "value": value};
+                    let data = JSON.stringify(text);
+
+                    let xhr = new XMLHttpRequest();
+                    let url = "{% url 'updatevotesanswer'%}";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("X-CSRFToken", token);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 201) {
+                            loadanswers();
+                        }
+                    };
+                    xhr.send(data);
+                },
             },
         });
-
-        let token = '{{csrf_token}}';
 
         function getJson() {
             let desc = document.getElementById('editor').innerHTML;
